@@ -82,7 +82,7 @@ export class AppComponent implements AfterViewInit, OnInit {
   /* openDialog() {
     this.dialog.open(DialogAddEdit);
   } */
- dialogoNuevoEmpleado() {
+  dialogoNuevoEmpleado() {
     this.dialog.open(DialogAddEdit,{
       disableClose:true,
       width:"450px"
@@ -93,6 +93,16 @@ export class AppComponent implements AfterViewInit, OnInit {
     })
   }
 
+  dialogoEditarEmpleado(dataEmpleado: Empleado) {
+    this.dialog.open(DialogAddEdit,{
+      disableClose:true,
+      width:"450px",
+      data:dataEmpleado
+    }).afterClosed().subscribe(resultado=>{
+      if(resultado === "editado"){
+        this.mostrarEmpleados();
+      }
+    })
+  }
+
 }
-
-

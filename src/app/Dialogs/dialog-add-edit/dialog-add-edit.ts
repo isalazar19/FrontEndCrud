@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 
 import {ReactiveFormsModule,FormBuilder,FormGroup,Validators} from "@angular/forms";
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { MatSnackBarModule,MatSnackBar} from '@angular/material/snack-bar';
 
@@ -67,8 +67,8 @@ export class DialogAddEdit {
     private fb: FormBuilder,
     private _snackBar: MatSnackBar,
     private _departamentoServicio: DepartamentoService,
-    private _empleadoServicio: EmpleadoService 
-
+    private _empleadoServicio: EmpleadoService, 
+    @Inject (MAT_DIALOG_DATA) public dataEmpleado: Empleado
   ){
     this.formEmpleado = this.fb.group({
       nombreCompleto: ['',Validators.required],
@@ -109,13 +109,8 @@ mostrarAlerta(msg: string, accion: string) {
       //fechaContrato: moment(this.formEmpleado.value.fechaContrato).format("YYYY-MM-DD")
     }
 
-    //para mostrar la fecha con formato DD-MM-YYYY
-    const fechaISO = modelo.fechaContrato;
-    const fechaFormateada = moment(fechaISO).format('DD-MM-YYYY');
-    console.log(fechaFormateada);
-
-
-    this._empleadoServicio.add(modelo).subscribe({
+    if(this.dataEmpleado == null){
+      this._empleadoServicio.add(modelo).subscribe({
       next:(data)=>{
         this.mostrarAlerta("Empleado fue creado","Listo");
         this.dialogoReferencia.close("creado");
@@ -123,7 +118,46 @@ mostrarAlerta(msg: string, accion: string) {
         this.mostrarAlerta("No se pudo crear","Error");
       }
     })
+    }else {
+      this._empleadoServicio.update(this.dataEmpleado.idEmpleado,modelo).subscribe({
+      next:(data)=>{
+        this.mostrarAlerta("Empleado fue actualizado","Listo");
+        this.dialogoReferencia.close("editado");
+      },error:(e)=>{
+        this.mostrarAlerta("No se pudo actualizar","Error");
+      }
+    })
+    }
 
+    //para mostrar la fecha con formato DD-MM-YYYY
+    const fechaISO = modelo.fechaContrato;
+    const fechaFormateada = moment(fechaISO).format('DD-MM-YYYY');
+    console.log(fechaFormateada);
+
+
+    /* this._empleadoServicio.add(modelo).subscribe({
+      next:(data)=>{
+        this.mostrarAlerta("Empleado fue creado","Listo");
+        this.dialogoReferencia.close("creado");
+      },error:(e)=>{
+        this.mostrarAlerta("No se pudo crear","Error");
+      }
+    }) */
+
+  }
+  ngOnInit(): void{
+    if(this.dataEmpleado){
+      this.formEmpleado.patchValue({
+        nombreCompleto: this.dataEmpleado.nombreCompleto,
+        idDepartamento: this.dataEmpleado.idDepartamento,
+        sueldo: this.dataEmpleado.sueldo,
+        fechaContrato: moment(this.dataEmpleado.fechaContrato,'DD-MM-YYYY')
+      })
+
+      this.tituloAccion = "Editar";
+      this.botonAccion = "Actualizar";
+
+    }
   }
 
 }
