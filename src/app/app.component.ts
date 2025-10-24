@@ -1,5 +1,11 @@
 // src/app/app.component.ts
 
+import { registerLocaleData } from '@angular/common';
+import localeEs from '@angular/common/locales/es';
+
+// Registrar el locale español
+registerLocaleData(localeEs, 'es');
+
 import {AfterViewInit, Component, ViewChild, OnInit} from '@angular/core';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
@@ -38,7 +44,7 @@ import { ReactiveFormsModule } from '@angular/forms';
   //styleUrls: ['.Dialogs/dialog-add-edit/dialog-add-edit.css']
 })
 export class AppComponent implements AfterViewInit, OnInit {
-  displayedColumns: string[] = ['NombreCompleto', 'Departamento', 'Sueldo', 'FechaContrato','Acciones'];
+  displayedColumns: string[] = ['IdEmpleado','NombreCompleto', 'Departamento', 'Sueldo', 'FechaContrato','Acciones'];
   dataSource = new MatTableDataSource<Empleado>();
 
   constructor(
